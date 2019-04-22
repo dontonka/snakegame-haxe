@@ -1,6 +1,6 @@
 import flash.display.Sprite;
 
-class Square extends Sprite{
+class WormSprite extends Sprite{
 
     public function new() 
     {
@@ -10,13 +10,25 @@ class Square extends Sprite{
     }
 }
 
+class FoodSprite extends Sprite{
+
+    public function new()
+    {
+        super();
+        this.graphics.beginFill(0x00FFFF, 1);
+        this.graphics.drawCircle(100, 100, 50);
+    }
+}
+
 class Main extends Sprite
 {
     public function new()
     {
         super();
-        var square = new Square();
-        addChild(square);
+        var worm = new WormSprite();
+        var food = new FoodSprite();
+        addChild(worm);
+        addChild(food);
     }
     static function main() 
     {

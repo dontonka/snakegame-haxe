@@ -1,4 +1,4 @@
 -main Main
 -cp src
--swf out.swf
+-swf snakegame.swf
 -swf-header 1024:768:60:a8cb65
