@@ -22,6 +22,7 @@ import entities.*;
 // Games states
 enum SnakeState { FirstRun; Playing; Dead; }
 
+
 // Array of the x-coordinate of the trees.
 //typedef TreeRow = Array<Float>;
 
@@ -175,6 +176,9 @@ class SnakeGame extends Sprite {
         // Actually need to move down ?
         if (mState == SnakeState.Playing) {
             trace(Date.now() + " Update call");
+
+            mSnake.move();
+            mSnake.updateDirection(mKeyDown);
         }      
     }
 

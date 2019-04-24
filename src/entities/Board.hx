@@ -3,7 +3,7 @@ package entities;
 import flash.display.BitmapData;
 import flash.geom.Rectangle;
 
-class Board {
+class Board implements ICollidible {
     static var BOARD_SPACING = 30;
     static var BOARD_BORDER_WIDTH = 4;
     static var BOARD_BORDER_COLOR = 0xff272e17;
@@ -27,4 +27,9 @@ class Board {
         mMainCanvas.fillRect(mOutterRect, BOARD_BORDER_COLOR);
         mMainCanvas.fillRect(mInnerRect, BOARD_BG_COLOR);
     }
+
+    public function isColliding(object:ICollidible) : Bool {
+        // Check if the current object collides with the one coming in param
+        return false;
+    }       
 }
