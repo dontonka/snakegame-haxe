@@ -189,7 +189,13 @@ class SnakeGame extends Sprite {
         // Actually need to move down ?
         if (mState == SnakeState.Playing) {
             // Only move the snakes if according to speed it is the time todo so.
-            if (TickGame()) {
+            if (TickGame() && /*!mKeyDown[Keyboard.SPACE]*/) {
+                if (mFood.isColliding(mSnake)) {
+                    mScore += mFood.eat();
+                    mSnake.grow();
+                } else {
+                    // TODO:
+                }
                 mSnake.move();
             }
             
@@ -220,6 +226,26 @@ class SnakeGame extends Sprite {
 
         // Draw the food
         mFood.draw();
+
+        // Update the gui message.
+        if (mState == SnakeState.FirstRun)
+        {
+            mScoreText.text = "Press any key to start";
+        }
+        else if (mState == SnakeState.Playing)
+        {
+            // Round scores to nearest 10 for display purposes
+            var s = Std.int(mScore * 0.1);
+            mScoreText.text = "Score:" + s + "0";
+        }
+        else
+        {
+            var s = Std.int(mScore * 0.1);
+            if (mScore>=mTopScore)
+            mScoreText.text = "Top Score! " + s + "0" + "    Press [space] to go again";
+            else
+            mScoreText.text = "You scored " + s + "0" + "    Press [space] to try again";
+        }        
     }
 
 

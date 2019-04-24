@@ -4,7 +4,7 @@ import flash.display.BitmapData;
 import flash.geom.Rectangle;
 
 class Board implements ICollidible {
-    static var BOARD_SPACING = 30;
+    public static var BOARD_SPACING = 30;
     static var BOARD_BORDER_WIDTH = 4;
     static var BOARD_BORDER_COLOR = 0xff272e17;
     static var BOARD_BG_COLOR = 0xffa8cb65;
@@ -31,5 +31,9 @@ class Board implements ICollidible {
     public function isColliding(object:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
         return false;
-    }       
+    }
+
+    public function getBound() : Rectangle {
+        return new Rectangle(0,0,0,0);
+    }
 }

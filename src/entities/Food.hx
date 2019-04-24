@@ -9,33 +9,70 @@ import ui.*;
 class Food implements ICollidible {
     static var MIN_SCORE = 5;
     static var MAX_SCORE = 100;
+    static var SPAWN_SPACING_PERCENT = 0.2;
 
     var mMainCanvas:BitmapData;
     var mSprite:GameSprite;
 
     var mCreatedStamp:Float;
+    var mPosX:Int;
+    var mPosY:Int;
 
     public function new(mainCanvas:BitmapData, inBits:BitmapData) {
         mMainCanvas = mainCanvas;
         mSprite = new GameSprite(mainCanvas, inBits, 0, 0, 28, 28);
 
+        respawn();
+    }
+
+    private function respawn() {
         mCreatedStamp = haxe.Timer.stamp();
-    }
 
-    public function draw() {
-        mSprite.draw(200, 200); // TODO
-    }
+        var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
+        var spawnSpacingH = Std.int(mMainCanvas.height * SPAWN_SPACING_PERCENT);
+        mPosX = spawnSpacingW + Std.random(mMainCanvas.width - spawnSpacingW*2);
+        mPosY = spawnSpacingH + Std.random(mMainCanvas.height - spawnSpacingH*2); 
 
-    public function eat() {
-        // TODO: compute score
-    }    
+        // Ensure position are on a cell
+        if (mPosX % mSprite.width != 0) {
+            mPosX = (Std.int(mPosX / mSprite.width) + 1) * mSprite.width;
+        }
+        if (mPosY % mSprite.height != 0) {
+            mPosY = (Std.int(mPosY / mSprite.height) + 1) * mSprite.height;
+        }         
 
-    public function respawn() {
-        // Respawn the snake at a random place on the board
+        trace("Food: " + mPosX + ", " + mPosY);
     } 
 
-    public function isColliding(object:ICollidible) : Bool {
+    public function draw() {
+        mSprite.draw(mPosX, mPosY);
+    }
+
+    public function eat() : Int {
+        // TODO: compute score
+        var score = MIN_SCORE;
+
+        respawn();
+        
+        return score;
+    }    
+
+    public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
+        var colliderRect = target.getBound();
+
+        //trace("isColliding!!: " + colliderRect + " VS (" + mPosX + ", " + mPosY + ")");
+
+        if (colliderRect.left >= mPosX && colliderRect.left <= mPosX+mSprite.width &&
+            colliderRect.top >= mPosY && colliderRect.top <= mPosY+mSprite.height) {
+            trace("Collide!!: " + colliderRect);
+            return true;
+        }
+        
         return false;
-    }       
+    }
+
+    public function getBound() : Rectangle {
+        return new Rectangle(mPosX, mPosY, mPosX+mSprite.width, mPosY+mSprite.height);
+    }
 }

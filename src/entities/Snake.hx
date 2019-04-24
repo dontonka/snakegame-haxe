@@ -19,8 +19,6 @@ class Snake implements ICollidible {
     var mSprite:GameSprite;
     var mLength:Int;
     var mDirection:Int;
-    var mHeadX:Int;
-    var mHeadY:Int; 
     var mStepSize:Int; 
     var mSnakeNodes:List<Point>;
 
@@ -31,19 +29,34 @@ class Snake implements ICollidible {
         // Default values
         mLength = 3;
         mDirection = Std.random(4); // 4 directions, not gonna change soon
-
-        var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
-        var spawnSpacingH = Std.int(mMainCanvas.height * SPAWN_SPACING_PERCENT);
-        mHeadX = spawnSpacingW + Std.random(mMainCanvas.width - spawnSpacingW);
-        mHeadY = spawnSpacingH + Std.random(mMainCanvas.height - spawnSpacingH);  
         mStepSize = Std.int(mMainCanvas.width / mSprite.width);  
 
-        createSnakeNodes();
+        respawn();       
     }
 
-    private function createSnakeNodes() {
-        var x = mHeadX;
-        var y = mHeadY;
+    private function respawn() {
+        mLength = 3;
+
+        // Respawn the snake at a random place on the board
+        var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
+        var spawnSpacingH = Std.int(mMainCanvas.height * SPAWN_SPACING_PERCENT);
+        var startingHeadX = spawnSpacingW + Std.random(mMainCanvas.width - spawnSpacingW*2);
+        var startingHeadY = spawnSpacingH + Std.random(mMainCanvas.height - spawnSpacingH*2);
+        
+        // Ensure position are on a cell
+        if (startingHeadX % mSprite.width != 0) {
+            startingHeadX = (Std.int(startingHeadX / mSprite.width) + 1) * mSprite.width;
+        }
+        if (startingHeadY % mSprite.height != 0) {
+            startingHeadY = (Std.int(startingHeadY / mSprite.height) + 1) * mSprite.height;
+        }
+        trace("Snake: " + startingHeadX + ", " + startingHeadY);
+        createSnakeNodes(startingHeadX, startingHeadY);        
+    } 
+
+    private function createSnakeNodes(headX:Int, headY:Int) {
+        var x = headX;
+        var y = headY;
 
         mSnakeNodes = new List<Point>();
         for (pt in 0...mLength) {
@@ -105,14 +118,16 @@ class Snake implements ICollidible {
 
     public function grow(size = 1) {
         // Increase the size of the of the snake by 'size' amount of node
+        mSnakeNodes.push(new Point(mSnakeNodes.first().x, mSnakeNodes.first().y));
     } 
-
-    public function respawn() {
-        // Respawn the snake at a random place on the board
-    }  
 
     public function isColliding(object:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
         return false;
     }     
+
+    public function getBound() : Rectangle {
+        var head = mSnakeNodes.first();
+        return new Rectangle(head.x, head.y, head.x+mSprite.width, head.y+mSprite.height);
+    }
 }
