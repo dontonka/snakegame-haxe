@@ -21,6 +21,7 @@ import entities.*;
 
 // Games states
 enum SnakeState { FirstRun; Playing; Dead; }
+enum Difficulty { Easy; Normal; Hard; }
 
 
 // Array of the x-coordinate of the trees.
@@ -49,11 +50,14 @@ class SnakeGame extends Sprite {
 
     // Time of last step - for calculating time deltas...
     var mLastStep:Float;
+    var mEngineLastStep:Float;
 
     // We increate game speed by increasing steps-per-second.
     // Note that this is independent of the flash frame rate, since we can
     //  do multiple steps per flash redraw.
     var mStepsPerSecond:Float;
+    var mUpdatePerSecond:Float;
+    var mDifficulty:Difficulty;
 
     // All position are in "field" coordinates, which are logical pixels.
     // We use the modulo operator (%) to wrap the trees around
@@ -100,6 +104,7 @@ class SnakeGame extends Sprite {
         mBoard = new Board(mGameCanvas);
         mSnake = new Snake(mGameCanvas, inBitmap);
         mFood = new Food(mGameCanvas, inBitmap);
+        mDifficulty = Difficulty.Normal; // TODO: make this customizable
 
         // I have chosen to add the event listeners to stage rather then
         //  other display objects.  Since there are no objects that will take
@@ -142,6 +147,7 @@ class SnakeGame extends Sprite {
         CheckTopScore(1000);
 
         mLastStep = haxe.Timer.stamp();
+        mEngineLastStep = haxe.Timer.stamp();
 
         Reset();
         // Slightly different message at the beginning
@@ -166,20 +172,40 @@ class SnakeGame extends Sprite {
         mPlayerX = 320;
         mPlayerY = 20;
         mScore = 0;
-        mStepsPerSecond = 100;
+        mStepsPerSecond = 30;
+
+        if (mDifficulty == Difficulty.Easy) {
+            mUpdatePerSecond = 3;
+        } else if (mDifficulty == Difficulty.Normal) {
+            mUpdatePerSecond = 5;
+        } else if (mDifficulty == Difficulty.Hard) {
+            mUpdatePerSecond = 8;
+        }
+
     }
 
    // Update one step.
-   // Is this case, we will descend one line.
-   // When the game speeds up, this will get called more often.
    function Update() {
         // Actually need to move down ?
         if (mState == SnakeState.Playing) {
-            trace(Date.now() + " Update call");
-
-            mSnake.move();
+            // Only move the snakes if according to speed it is the time todo so.
+            if (TickGame()) {
+                mSnake.move();
+            }
+            
+            // We do update the direction as fast as we can.
             mSnake.updateDirection(mKeyDown);
         }      
+    }
+
+    function TickGame() : Bool {
+        // Compute if we need to tick the snake now or not according to
+        // the game difficulties (so snake speed)
+        var now = haxe.Timer.stamp();
+        var steps = Math.floor((now-mEngineLastStep) * mUpdatePerSecond);
+        mEngineLastStep += steps / mUpdatePerSecond;
+
+        return (steps != 0);
     }
 
     // Update the graphics based on class variables.
@@ -189,10 +215,10 @@ class SnakeGame extends Sprite {
         // Draw the main board
         mBoard.draw();
 
-        // Draw the main board
+        // Draw the snakes
         mSnake.draw();
 
-        // Draw the main board
+        // Draw the food
         mFood.draw();
     }
 

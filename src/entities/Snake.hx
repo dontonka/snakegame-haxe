@@ -13,15 +13,16 @@ class Snake implements ICollidible {
     static var DIR_RIGTH = 1;
     static var DIR_UP = 2;
     static var DIR_DOWN = 3;
-    static var SPAWN_SPACING_PERCENT = 0.15;
+    static var SPAWN_SPACING_PERCENT = 0.2;
 
     var mMainCanvas:BitmapData;
     var mSprite:GameSprite;
     var mLength:Int;
-    var mSpeed:Int;
     var mDirection:Int;
     var mHeadX:Int;
     var mHeadY:Int; 
+    var mStepSize:Int; 
+    var mSnakeNodes:List<Point>;
 
     public function new(mainCanvas:BitmapData, inBits:BitmapData) {
         mMainCanvas = mainCanvas;
@@ -29,36 +30,75 @@ class Snake implements ICollidible {
 
         // Default values
         mLength = 3;
-        mSpeed = 1;
         mDirection = Std.random(4); // 4 directions, not gonna change soon
-        mHeadX = Std.random(mMainCanvas.width - Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT));
-        mHeadY = Std.random(mMainCanvas.height - Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT));         
+
+        var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
+        var spawnSpacingH = Std.int(mMainCanvas.height * SPAWN_SPACING_PERCENT);
+        mHeadX = spawnSpacingW + Std.random(mMainCanvas.width - spawnSpacingW);
+        mHeadY = spawnSpacingH + Std.random(mMainCanvas.height - spawnSpacingH);  
+        mStepSize = Std.int(mMainCanvas.width / mSprite.width);  
+
+        createSnakeNodes();
+    }
+
+    private function createSnakeNodes() {
+        var x = mHeadX;
+        var y = mHeadY;
+
+        mSnakeNodes = new List<Point>();
+        for (pt in 0...mLength) {
+            mSnakeNodes.add(new Point(x, y));
+            x += mStepSize;
+        }  
     }
 
     public function draw() {
-        mSprite.draw(mHeadX, mHeadY);
+        for (node in mSnakeNodes) {
+            mSprite.draw(node.x, node.y);
+        }
     }
 
     public function move() {
-        if (mDirection == DIR_LEFT) {
-            mHeadX--; 
-        } else if (mDirection == DIR_RIGTH) { 
-            mHeadX++; 
-        } else if (mDirection == DIR_UP) { 
-            mHeadY--; 
-        } else if (mDirection == DIR_DOWN) { 
-            mHeadY++; 
-        }
+        // Allocate the memory only once
+        var swapPos = new Point(0, 0);
+        var previousPos = new Point(0, 0);
+        var nodeId = 0;
+
+        for (node in mSnakeNodes) {
+            swapPos.x = node.x;
+            swapPos.y = node.y;    
+
+            if (nodeId == 0) {
+                if (mDirection == DIR_LEFT) {
+                    node.x -= mStepSize; 
+                } else if (mDirection == DIR_RIGTH) { 
+                    node.x += mStepSize; 
+                } else if (mDirection == DIR_UP) { 
+                    node.y -= mStepSize; 
+                } else if (mDirection == DIR_DOWN) {
+                    node.y += mStepSize; 
+                }
+            } else {
+                node.x = previousPos.x;
+                node.y = previousPos.y;                 
+            }
+
+            previousPos.x = swapPos.x;
+            previousPos.y = swapPos.y;  
+            nodeId++;
+        }        
     } 
 
     public function updateDirection(keyDown:Array<Bool>) {
-        if (keyDown[Keyboard.LEFT]) {
+        // Prevent going into opposite direction as the current direction
+
+        if (keyDown[Keyboard.LEFT] && mDirection != DIR_RIGTH) {
             mDirection = DIR_LEFT; 
-        } else if (keyDown[Keyboard.RIGHT]) { 
+        } else if (keyDown[Keyboard.RIGHT] && mDirection != DIR_LEFT) { 
             mDirection = DIR_RIGTH;
-        } else if (keyDown[Keyboard.UP]) { 
+        } else if (keyDown[Keyboard.UP] && mDirection != DIR_DOWN) { 
             mDirection = DIR_UP;
-        } else if (keyDown[Keyboard.DOWN]) { 
+        } else if (keyDown[Keyboard.DOWN] && mDirection != DIR_UP) { 
             mDirection = DIR_DOWN;
         }        
     }    

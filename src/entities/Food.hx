@@ -30,6 +30,10 @@ class Food implements ICollidible {
         // TODO: compute score
     }    
 
+    public function respawn() {
+        // Respawn the snake at a random place on the board
+    } 
+
     public function isColliding(object:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
         return false;
