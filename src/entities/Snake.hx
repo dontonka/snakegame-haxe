@@ -50,7 +50,7 @@ class Snake implements ICollidible {
         if (startingHeadY % mSprite.height != 0) {
             startingHeadY = (Std.int(startingHeadY / mSprite.height) + 1) * mSprite.height;
         }
-        trace("Snake: " + startingHeadX + ", " + startingHeadY);
+        
         createSnakeNodes(startingHeadX, startingHeadY);        
     } 
 
@@ -59,8 +59,10 @@ class Snake implements ICollidible {
         var y = headY;
 
         mSnakeNodes = new List<Point>();
-        for (pt in 0...mLength) {
-            mSnakeNodes.add(new Point(x, y));
+        for (i in 0...mLength) {
+            var pt = new Point(x, y);
+            mSnakeNodes.add(pt);
+            trace("createSnakeNodes Snake: " + pt);
             x += mStepSize;
         }  
     }
@@ -118,7 +120,8 @@ class Snake implements ICollidible {
 
     public function grow(size = 1) {
         // Increase the size of the of the snake by 'size' amount of node
-        mSnakeNodes.push(new Point(mSnakeNodes.first().x, mSnakeNodes.first().y));
+        var head = mSnakeNodes.first();
+        mSnakeNodes.push(new Point(head.x, head.y));
     } 
 
     public function isColliding(object:ICollidible) : Bool {
@@ -128,6 +131,6 @@ class Snake implements ICollidible {
 
     public function getBound() : Rectangle {
         var head = mSnakeNodes.first();
-        return new Rectangle(head.x, head.y, head.x+mSprite.width, head.y+mSprite.height);
+        return new Rectangle(head.x, head.y, mSprite.width, mSprite.height);
     }
 }

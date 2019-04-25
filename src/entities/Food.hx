@@ -52,20 +52,21 @@ class Food implements ICollidible {
         // TODO: compute score
         var score = MIN_SCORE;
 
+        // TODO: ensure there are no snakes present in the new position
         respawn();
-        
+
         return score;
     }    
 
     public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
-        var colliderRect = target.getBound();
+        var targetRect = target.getBound();
+        var localRect = getBound();
 
         //trace("isColliding!!: " + colliderRect + " VS (" + mPosX + ", " + mPosY + ")");
 
-        if (colliderRect.left >= mPosX && colliderRect.left <= mPosX+mSprite.width &&
-            colliderRect.top >= mPosY && colliderRect.top <= mPosY+mSprite.height) {
-            trace("Collide!!: " + colliderRect);
+        if (targetRect.intersects(localRect)) {
+            trace("Collide!!: " + targetRect);
             return true;
         }
         
@@ -73,6 +74,6 @@ class Food implements ICollidible {
     }
 
     public function getBound() : Rectangle {
-        return new Rectangle(mPosX, mPosY, mPosX+mSprite.width, mPosY+mSprite.height);
+        return new Rectangle(mPosX, mPosY, mSprite.width, mSprite.height);
     }
 }

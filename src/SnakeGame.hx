@@ -189,14 +189,15 @@ class SnakeGame extends Sprite {
         // Actually need to move down ?
         if (mState == SnakeState.Playing) {
             // Only move the snakes if according to speed it is the time todo so.
-            if (TickGame() && /*!mKeyDown[Keyboard.SPACE]*/) {
+            if (TickGame() && !mKeyDown[Keyboard.SPACE]) {
+                mSnake.move();
+
                 if (mFood.isColliding(mSnake)) {
                     mScore += mFood.eat();
                     mSnake.grow();
                 } else {
-                    // TODO:
+                    // TODO: check other colliding, which will make the game to ends most likely.
                 }
-                mSnake.move();
             }
             
             // We do update the direction as fast as we can.
