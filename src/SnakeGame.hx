@@ -174,7 +174,7 @@ class SnakeGame extends Sprite {
         }
 
         mSnake = new Snake(mGameCanvas, mSpriteSheet);
-        // TODO: what happen with the old instance memory wise?
+        // TODO: what happen with the old instance memory wise in haxe?
 
         // Respawn the food to a new place anyway
         mFood.respawn(mSnake);
@@ -182,7 +182,6 @@ class SnakeGame extends Sprite {
 
    // Update one step.
    function Update() {
-        // Actually need to move down ?
         if (mState == SnakeState.Playing) {
             // Only move the snakes if according to speed it is the time todo so.
             if (TickGame()) {
