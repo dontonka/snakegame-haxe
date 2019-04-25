@@ -29,7 +29,7 @@ class Snake implements ICollidible {
         // Default values
         mLength = 3;
         mDirection = Std.random(4); // 4 directions, not gonna change soon
-        mStepSize = Std.int(mMainCanvas.width / mSprite.width);  
+        mStepSize = mSprite.width;  
 
         respawn();       
     }
