@@ -7,6 +7,7 @@ import flash.ui.Keyboard;
 
 
 import ui.*;
+import physics.*;
 
 class Snake implements ICollidible {
     static var DIR_LEFT = 0;
@@ -131,6 +132,8 @@ class Snake implements ICollidible {
     } 
 
     public function isColliding(target:ICollidible) : Bool {
+        if (target == null) return false;
+
         // Check if the current object collides with the one coming in param
         var targetRects = target.getBounds();
         var localRect = getRegion();
@@ -138,7 +141,7 @@ class Snake implements ICollidible {
         if (targetRects != null) {
             for (node in targetRects) {
                 if (node.intersects(localRect)) {
-                    trace("SNAKE Collide!!: " + node + " VS " + localRect);
+                    //trace("SNAKE Collide!!: " + node + " VS " + localRect);
                     return true;
                 }
             }

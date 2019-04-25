@@ -3,6 +3,8 @@ package entities;
 import flash.display.BitmapData;
 import flash.geom.Rectangle;
 
+import physics.*;
+
 class Board implements ICollidible {
     public static var BOARD_SPACING = 30;
     static var BOARD_BORDER_WIDTH = 4;
@@ -29,6 +31,8 @@ class Board implements ICollidible {
     }
 
     public function isColliding(target:ICollidible) : Bool {
+        if (target == null) return false;
+
         // Check if the current object collides with the one coming in param
         var targetRect = target.getRegion();
         var borderLeft = new Rectangle(mOutterRect.left, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
@@ -38,7 +42,7 @@ class Board implements ICollidible {
 
         if (targetRect.intersects(borderLeft) || targetRect.intersects(borderRigth) || 
             targetRect.intersects(borderTop) || targetRect.intersects(borderBottom)) {
-            trace("BOARD Collide!!: " + targetRect);
+            //trace("BOARD Collide!!: " + targetRect);
             return true;
         }
 
@@ -55,7 +59,7 @@ class Board implements ICollidible {
         var borderTop = new Rectangle(mOutterRect.left, mOutterRect.top, mOutterRect.width, mOutterRect.top + BOARD_BORDER_WIDTH);
         var borderBottom = new Rectangle(mOutterRect.left, mOutterRect.bottom - BOARD_BORDER_WIDTH, mOutterRect.width, mOutterRect.bottom);
         var listRects = new List<Rectangle>(); 
-        
+
         listRects.add(borderLeft);  
         listRects.add(borderRigth);  
         listRects.add(borderTop);  

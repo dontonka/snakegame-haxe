@@ -96,6 +96,7 @@ class SnakeGame extends Sprite {
         mBoard = new Board(mGameCanvas);
         mSnake = new Snake(mGameCanvas, mSpriteSheet);
         mFood = new Food(mGameCanvas, mSpriteSheet);
+        mFood.respawn(mSnake);
         mDifficulty = Difficulty.Normal; // TODO: make this customizable from UI. But change it manually to play harder XD.
 
         // I have chosen to add the event listeners to stage rather then
@@ -174,6 +175,9 @@ class SnakeGame extends Sprite {
 
         mSnake = new Snake(mGameCanvas, mSpriteSheet);
         // TODO: what happen with the old instance memory wise?
+
+        // Respawn the food to a new place anyway
+        mFood.respawn(mSnake);
     }
 
    // Update one step.
@@ -181,11 +185,11 @@ class SnakeGame extends Sprite {
         // Actually need to move down ?
         if (mState == SnakeState.Playing) {
             // Only move the snakes if according to speed it is the time todo so.
-            if (TickGame() && !mKeyDown[Keyboard.SPACE]) {
+            if (TickGame()) {
                 mSnake.move();
 
                 if (mFood.isColliding(mSnake)) {
-                    mScore += mFood.eat();
+                    mScore += mFood.eat(mSnake);
                     mSnake.grow();
                 } else if (mBoard.isColliding(mSnake) || mSnake.isColliding(mSnake)) {
                     CheckTopScore(mScore);
