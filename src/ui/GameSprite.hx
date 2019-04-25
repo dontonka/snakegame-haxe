@@ -30,8 +30,7 @@ class GameSprite
    // Passing the arena into the constructor is not really required,
    //  but doing this reduces the number of params we have to pass into
    //  the Draw function;
-   public function new(mainCanvas:BitmapData,inBits:BitmapData,inX:Int, inY:Int, inW:Int, inH:Int,
-           ?inHotX:Null<Float>, ?inHotY:Null<Float>)
+   public function new(mainCanvas:BitmapData,inBits:BitmapData,inX:Int, inY:Int, inW:Int, inH:Int)
    {
       mMainCanvas = mainCanvas;
       mBits = inBits;
@@ -39,16 +38,12 @@ class GameSprite
       mPoint = new Point(0,0);
       width = inW;
       height = inH;
-
-      // If null is provided, assume the centre.
-      mHotX = inHotX==null ? inW/2 : inHotX;
-      mHotY = inHotY==null ? inH/2 : inHotY;
    }
 
    public function draw(inX:Float,inY:Float)
    {
-      mPoint.x = inX-mHotX;
-      mPoint.y = inY-mHotY;
+      mPoint.x = inX;
+      mPoint.y = inY;
       mMainCanvas.copyPixels(mBits,mRect,mPoint,null,null,true);
    }
 }
