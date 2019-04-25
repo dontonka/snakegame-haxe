@@ -20,12 +20,6 @@ class GameSprite
    var mBits:BitmapData;
    var mRect:Rectangle;
    var mPoint:Point;
-   // The "hotspot" is the logical origin of the object, with respect
-   //  to the top left of its bitmap rectangle.  This allows you to deal
-   //  with the position of the object, without having to worry about drawing
-   //  offsets etc.
-   var mHotX:Float;
-   var mHotY:Float;
 
    // Passing the arena into the constructor is not really required,
    //  but doing this reduces the number of params we have to pass into
