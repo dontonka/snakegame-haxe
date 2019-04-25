@@ -10,9 +10,10 @@ import ui.*;
 
 class Snake implements ICollidible {
     static var DIR_LEFT = 0;
-    static var DIR_RIGTH = 1;
-    static var DIR_UP = 2;
-    static var DIR_DOWN = 3;
+    static var DIR_UP = 1;
+    static var DIR_DOWN = 2;    
+    static var DIR_RIGTH = 3;
+
     static var SPAWN_SPACING_PERCENT = 0.2;
 
     var mMainCanvas:BitmapData;
@@ -32,7 +33,7 @@ class Snake implements ICollidible {
 
     public function respawn() {
         mLength = 3;
-        mDirection = Std.random(4); // 4 directions, not gonna change soon
+        mDirection = Std.random(DIR_RIGTH); // random, but don't allow right, has this will trigger a self collising at start
 
         // Respawn the snake at a random place on the board
         var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
@@ -131,19 +132,37 @@ class Snake implements ICollidible {
 
     public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
-        var targetRect = target.getBound();
-        var localRect = getBound();
+        var targetRects = target.getBounds();
+        var localRect = getRegion();
 
-        if (targetRect.intersects(localRect)) {
-            trace("SNAKE Collide!!: " + targetRect);
-            return true;
+        if (targetRects != null) {
+            for (node in targetRects) {
+                if (node.intersects(localRect)) {
+                    trace("SNAKE Collide!!: " + node + " VS " + localRect);
+                    return true;
+                }
+            }
         }
-        
+
         return false;
     }     
 
-    public function getBound() : Rectangle {
+    public function getRegion() : Rectangle {
+        // Region for the snake is only the head
         var head = mSnakeNodes.first();
         return new Rectangle(head.x, head.y, mSprite.width, mSprite.height);
     }
+
+    public function getBounds() : List<Rectangle> {
+        var listRects = new List<Rectangle>();
+        var nodeId = 0;
+        for (node in mSnakeNodes) {
+            // Skip the head!
+            if (nodeId != 0) {
+                listRects.add(new Rectangle(node.x, node.y, mSprite.width, mSprite.height));
+            }
+            nodeId++;
+        }
+        return listRects;
+    }   
 }

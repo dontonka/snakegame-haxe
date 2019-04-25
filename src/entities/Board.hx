@@ -30,7 +30,7 @@ class Board implements ICollidible {
 
     public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
-        var targetRect = target.getBound();
+        var targetRect = target.getRegion();
         var borderLeft = new Rectangle(mOutterRect.left, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
         var borderRigth = new Rectangle(mOutterRect.right - BOARD_BORDER_WIDTH, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
         var borderTop = new Rectangle(mOutterRect.left, mOutterRect.top, mOutterRect.width, mOutterRect.top + BOARD_BORDER_WIDTH);
@@ -45,7 +45,22 @@ class Board implements ICollidible {
         return false;
     }
 
-    public function getBound() : Rectangle {
+    public function getRegion() : Rectangle {
         return mOutterRect;
     }
+
+    public function getBounds() : List<Rectangle> {
+        var borderLeft = new Rectangle(mOutterRect.left, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
+        var borderRigth = new Rectangle(mOutterRect.right - BOARD_BORDER_WIDTH, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
+        var borderTop = new Rectangle(mOutterRect.left, mOutterRect.top, mOutterRect.width, mOutterRect.top + BOARD_BORDER_WIDTH);
+        var borderBottom = new Rectangle(mOutterRect.left, mOutterRect.bottom - BOARD_BORDER_WIDTH, mOutterRect.width, mOutterRect.bottom);
+        var listRects = new List<Rectangle>(); 
+        
+        listRects.add(borderLeft);  
+        listRects.add(borderRigth);  
+        listRects.add(borderTop);  
+        listRects.add(borderBottom);  
+
+        return listRects;
+    }    
 }

@@ -33,13 +33,15 @@ class Food implements ICollidible {
         mPosX = spawnSpacingW + Std.random(mMainCanvas.width - spawnSpacingW*2);
         mPosY = spawnSpacingH + Std.random(mMainCanvas.height - spawnSpacingH*2); 
 
-        // Ensure position are on a cell
+        // Ensure position are on a "cell"
         if (mPosX % mSprite.width != 0) {
             mPosX = (Std.int(mPosX / mSprite.width) + 1) * mSprite.width;
         }
         if (mPosY % mSprite.height != 0) {
             mPosY = (Std.int(mPosY / mSprite.height) + 1) * mSprite.height;
         }         
+
+        // Ensure that the food is not collising 
 
         trace("Food: " + mPosX + ", " + mPosY);
     } 
@@ -60,8 +62,8 @@ class Food implements ICollidible {
 
     public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
-        var targetRect = target.getBound();
-        var localRect = getBound();
+        var targetRect = target.getRegion();
+        var localRect = getRegion();
 
         if (targetRect.intersects(localRect)) {
             trace("FOOD Collide!!: " + targetRect);
@@ -71,7 +73,13 @@ class Food implements ICollidible {
         return false;
     }
 
-    public function getBound() : Rectangle {
+    public function getRegion() : Rectangle {
         return new Rectangle(mPosX, mPosY, mSprite.width, mSprite.height);
     }
+
+    public function getBounds() : List<Rectangle> {
+        var listRects = new List<Rectangle>();
+        listRects.add(getRegion());
+        return listRects;
+    }      
 }

@@ -23,10 +23,6 @@ import entities.*;
 enum SnakeState { FirstRun; Playing; Dead; }
 enum Difficulty { Easy; Normal; Hard; }
 
-
-// Array of the x-coordinate of the trees.
-//typedef TreeRow = Array<Float>;
-
 // This is our main class, and in this case, it contains the whole game.
 // It extends the standard flash "Sprite" class, which allows child objects
 //  and events.  No need for a MovieClip, because we are not using the flash
@@ -100,7 +96,7 @@ class SnakeGame extends Sprite {
         mBoard = new Board(mGameCanvas);
         mSnake = new Snake(mGameCanvas, mSpriteSheet);
         mFood = new Food(mGameCanvas, mSpriteSheet);
-        mDifficulty = Difficulty.Normal; // TODO: make this customizable
+        mDifficulty = Difficulty.Normal; // TODO: make this customizable from UI. But change it manually to play harder XD.
 
         // I have chosen to add the event listeners to stage rather then
         //  other display objects.  Since there are no objects that will take
@@ -191,8 +187,7 @@ class SnakeGame extends Sprite {
                 if (mFood.isColliding(mSnake)) {
                     mScore += mFood.eat();
                     mSnake.grow();
-                } else if (mBoard.isColliding(mSnake)) {
-
+                } else if (mBoard.isColliding(mSnake) || mSnake.isColliding(mSnake)) {
                     CheckTopScore(mScore);
                     mState = SnakeState.Dead;
                 }
