@@ -25,17 +25,14 @@ class Snake implements ICollidible {
     public function new(mainCanvas:BitmapData, inBits:BitmapData) {
         mMainCanvas = mainCanvas;
         mSprite = new GameSprite(mainCanvas, inBits, 28, 0, 28, 28);
-
-        // Default values
-        mLength = 3;
-        mDirection = Std.random(4); // 4 directions, not gonna change soon
         mStepSize = mSprite.width;  
 
         respawn();       
     }
 
-    private function respawn() {
+    public function respawn() {
         mLength = 3;
+        mDirection = Std.random(4); // 4 directions, not gonna change soon
 
         // Respawn the snake at a random place on the board
         var spawnSpacingW = Std.int(mMainCanvas.width * SPAWN_SPACING_PERCENT);
@@ -60,9 +57,7 @@ class Snake implements ICollidible {
 
         mSnakeNodes = new List<Point>();
         for (i in 0...mLength) {
-            var pt = new Point(x, y);
-            mSnakeNodes.add(pt);
-            trace("createSnakeNodes Snake: " + pt);
+            mSnakeNodes.add(new Point(x, y));
             x += mStepSize;
         }  
     }
@@ -106,7 +101,6 @@ class Snake implements ICollidible {
 
     public function updateDirection(keyDown:Array<Bool>) {
         // Prevent going into opposite direction as the current direction
-
         if (keyDown[Keyboard.LEFT] && mDirection != DIR_RIGTH) {
             mDirection = DIR_LEFT; 
         } else if (keyDown[Keyboard.RIGHT] && mDirection != DIR_LEFT) { 
@@ -135,8 +129,16 @@ class Snake implements ICollidible {
         mSnakeNodes.add(node);
     } 
 
-    public function isColliding(object:ICollidible) : Bool {
+    public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
+        var targetRect = target.getBound();
+        var localRect = getBound();
+
+        if (targetRect.intersects(localRect)) {
+            trace("SNAKE Collide!!: " + targetRect);
+            return true;
+        }
+        
         return false;
     }     
 

@@ -28,12 +28,24 @@ class Board implements ICollidible {
         mMainCanvas.fillRect(mInnerRect, BOARD_BG_COLOR);
     }
 
-    public function isColliding(object:ICollidible) : Bool {
+    public function isColliding(target:ICollidible) : Bool {
         // Check if the current object collides with the one coming in param
+        var targetRect = target.getBound();
+        var borderLeft = new Rectangle(mOutterRect.left, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
+        var borderRigth = new Rectangle(mOutterRect.right - BOARD_BORDER_WIDTH, mOutterRect.top, BOARD_BORDER_WIDTH, mOutterRect.height);
+        var borderTop = new Rectangle(mOutterRect.left, mOutterRect.top, mOutterRect.width, mOutterRect.top + BOARD_BORDER_WIDTH);
+        var borderBottom = new Rectangle(mOutterRect.left, mOutterRect.bottom - BOARD_BORDER_WIDTH, mOutterRect.width, mOutterRect.bottom);
+
+        if (targetRect.intersects(borderLeft) || targetRect.intersects(borderRigth) || 
+            targetRect.intersects(borderTop) || targetRect.intersects(borderBottom)) {
+            trace("BOARD Collide!!: " + targetRect);
+            return true;
+        }
+
         return false;
     }
 
     public function getBound() : Rectangle {
-        return new Rectangle(0,0,0,0);
+        return mOutterRect;
     }
 }

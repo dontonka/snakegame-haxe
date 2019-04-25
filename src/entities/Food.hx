@@ -7,7 +7,7 @@ import flash.geom.Point;
 import ui.*;
 
 class Food implements ICollidible {
-    static var MIN_SCORE = 5;
+    static var MIN_SCORE = 10;
     static var MAX_SCORE = 100;
     static var SPAWN_SPACING_PERCENT = 0.2;
 
@@ -49,7 +49,7 @@ class Food implements ICollidible {
     }
 
     public function eat() : Int {
-        // TODO: compute score
+        // TODO: compute score with time creation (optional)
         var score = MIN_SCORE;
 
         // TODO: ensure there are no snakes present in the new position
@@ -63,10 +63,8 @@ class Food implements ICollidible {
         var targetRect = target.getBound();
         var localRect = getBound();
 
-        //trace("isColliding!!: " + colliderRect + " VS (" + mPosX + ", " + mPosY + ")");
-
         if (targetRect.intersects(localRect)) {
-            trace("Collide!!: " + targetRect);
+            trace("FOOD Collide!!: " + targetRect);
             return true;
         }
         

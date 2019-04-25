@@ -34,6 +34,7 @@ enum Difficulty { Easy; Normal; Hard; }
 class SnakeGame extends Sprite {
     // Using "copyPixels" we draw into this bitmap...
     var mGameCanvas:BitmapData;
+    var mSpriteSheet:BitmapData;
     var mBoardWidth:Int;
     var mBoardHeigth:Int;   
 
@@ -58,12 +59,6 @@ class SnakeGame extends Sprite {
     var mStepsPerSecond:Float;
     var mUpdatePerSecond:Float;
     var mDifficulty:Difficulty;
-
-    // All position are in "field" coordinates, which are logical pixels.
-    // We use the modulo operator (%) to wrap the trees around
-    //static var mFieldHeight = 10000;
-    var mPlayerX:Float;
-    var mPlayerY:Float;
 
     // Curreny play
     var mScore:Float;
@@ -97,13 +92,14 @@ class SnakeGame extends Sprite {
         // Then an instance of this is placed on the stage.  We can then simply change
         //  the offscreen buffer and have the changes visible.  This does not necessarily
         //  have to be the same size as the game, but in this case it is.
+        mSpriteSheet = inBitmap;
         mGameCanvas = new BitmapData(mBoardWidth, mBoardHeigth);
         addChild(new Bitmap(mGameCanvas));
 
         // Create game entities
         mBoard = new Board(mGameCanvas);
-        mSnake = new Snake(mGameCanvas, inBitmap);
-        mFood = new Food(mGameCanvas, inBitmap);
+        mSnake = new Snake(mGameCanvas, mSpriteSheet);
+        mFood = new Food(mGameCanvas, mSpriteSheet);
         mDifficulty = Difficulty.Normal; // TODO: make this customizable
 
         // I have chosen to add the event listeners to stage rather then
@@ -144,7 +140,7 @@ class SnakeGame extends Sprite {
 
         // Just something small to aspire too...
         mTopScore = 0;
-        CheckTopScore(1000);
+        CheckTopScore(0);
 
         mLastStep = haxe.Timer.stamp();
         mEngineLastStep = haxe.Timer.stamp();
@@ -156,7 +152,7 @@ class SnakeGame extends Sprite {
 
     // Update the top score at the end of the game, if required.
     function CheckTopScore(inScore:Float) {
-        if (inScore>mTopScore)
+        if (inScore > mTopScore)
         {
             mTopScore = inScore;
             var s = Std.int(mTopScore * 0.1);
@@ -169,8 +165,6 @@ class SnakeGame extends Sprite {
 
     // Get ready to start the game again
     function Reset() {
-        mPlayerX = 320;
-        mPlayerY = 20;
         mScore = 0;
         mStepsPerSecond = 30;
 
@@ -182,6 +176,8 @@ class SnakeGame extends Sprite {
             mUpdatePerSecond = 8;
         }
 
+        mSnake = new Snake(mGameCanvas, mSpriteSheet);
+        // TODO: what happen with the old instance memory wise?
     }
 
    // Update one step.
@@ -195,8 +191,10 @@ class SnakeGame extends Sprite {
                 if (mFood.isColliding(mSnake)) {
                     mScore += mFood.eat();
                     mSnake.grow();
-                } else {
-                    // TODO: check other colliding, which will make the game to ends most likely.
+                } else if (mBoard.isColliding(mSnake)) {
+
+                    CheckTopScore(mScore);
+                    mState = SnakeState.Dead;
                 }
             }
             
@@ -219,6 +217,7 @@ class SnakeGame extends Sprite {
     // Note that this will be called less frequently than the "Update" call.
     // inExtra is not used in this example, because scrolling seems smooth enough.
     function Render(inExtra:Float) {
+
         // Draw the main board
         mBoard.draw();
 
@@ -228,6 +227,10 @@ class SnakeGame extends Sprite {
         // Draw the food
         mFood.draw();
 
+        drawScore();
+    }
+
+    function drawScore() {
         // Update the gui message.
         if (mState == SnakeState.FirstRun)
         {
@@ -242,16 +245,15 @@ class SnakeGame extends Sprite {
         else
         {
             var s = Std.int(mScore * 0.1);
-            if (mScore>=mTopScore)
+            if (mScore >= mTopScore)
             mScoreText.text = "Top Score! " + s + "0" + "    Press [space] to go again";
             else
             mScoreText.text = "You scored " + s + "0" + "    Press [space] to try again";
-        }        
-    }
+        }  
+    } 
 
-
-   // Respond to a key-down event.
-   function OnKeyDown(event:KeyboardEvent) {
+    // Respond to a key-down event.
+    function OnKeyDown(event:KeyboardEvent) {
         // When a key is held down, multiple KeyDown events are generated.
         // This check means we only pick up the first one.
         if (!mKeyDown[event.keyCode])
@@ -270,17 +272,17 @@ class SnakeGame extends Sprite {
         }
     }
 
-   // Key-up event
-   function OnKeyUp(event:KeyboardEvent) {
+    // Key-up event
+    function OnKeyUp(event:KeyboardEvent) {
         // Store for use in game
         mKeyDown[event.keyCode] = false;
     }
 
-   // This function gets called once per flash frame.
-   // This will be approximately the rate specified in the swf, but usually a
-   //  bit slower.  For accurate timing, we will not rely on flash to call us
-   //  consistently, but we will do our own timing.
-   function OnEnter(e:flash.events.Event) {
+    // This function gets called once per flash frame.
+    // This will be approximately the rate specified in the swf, but usually a
+    //  bit slower.  For accurate timing, we will not rely on flash to call us
+    //  consistently, but we will do our own timing.
+    function OnEnter(e:flash.events.Event) {
         var now = haxe.Timer.stamp();
         // Do a number of descrete steps based on the mStepsPerSecond.
         var steps = Math.floor( (now-mLastStep) * mStepsPerSecond );
@@ -304,7 +306,7 @@ class SnakeGame extends Sprite {
     }
 
    // Haxe will always look for a static function called "main".
-   static public function main() {
+    static public function main() {
         // There are a number of ways to get bitmap data into flash.
         // In this case, we're loading it from a file that is placed next to the
         //  game swf.  Other ways will be described later.
