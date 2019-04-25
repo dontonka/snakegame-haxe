@@ -118,10 +118,21 @@ class Snake implements ICollidible {
         }        
     }    
 
-    public function grow(size = 1) {
-        // Increase the size of the of the snake by 'size' amount of node
-        var head = mSnakeNodes.first();
-        mSnakeNodes.push(new Point(head.x, head.y));
+    public function grow() {
+        var node = new Point(mSnakeNodes.last().x, mSnakeNodes.last().y);
+
+        // Add one node at the end according to the direction
+        if (mDirection == DIR_LEFT) {
+            node.x += mStepSize; 
+        } else if (mDirection == DIR_RIGTH) { 
+            node.x -= mStepSize; 
+        } else if (mDirection == DIR_UP) { 
+            node.y += mStepSize; 
+        } else if (mDirection == DIR_DOWN) {
+            node.y -= mStepSize; 
+        }
+
+        mSnakeNodes.add(node);
     } 
 
     public function isColliding(object:ICollidible) : Bool {
